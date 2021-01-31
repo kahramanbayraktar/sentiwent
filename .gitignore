@@ -1,0 +1,7 @@
+env/
+.env
+secrets.json
+sentiwent/__pycache__/
+.vscode/launch.json
+tweets/__pycache__/
+tweets/migrations/__pycache__/
