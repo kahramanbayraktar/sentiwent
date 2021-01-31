@@ -83,7 +83,7 @@ DATABASES = {
 		'HOST': config('DB_SERVER'),
 		'PORT': '',
 		'OPTIONS': {
-			'driver': 'ODBC Driver 13 for SQL Server',
+			'driver': config('DB_DRIVER'),
 		},
 	},
 }
