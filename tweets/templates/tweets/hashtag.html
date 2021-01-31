@@ -1,0 +1,182 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<style>
+    .form-check {
+        padding: 0 10px 0 0 !important
+    }
+
+    fieldset {
+        padding: 10px 0 0 0 !important
+    }
+</style>
+
+<h1><i class="fa fa-hashtag"></i> Hashtag</h1>
+
+<style>
+    #toggleSearch[aria-expanded=true] .show-search {
+        display: none;
+    }
+
+    #toggleSearch[aria-expanded=false] .hide-search {
+        display: none;
+    }
+</style>
+
+<p>
+    <a id="toggleSearch" class="btn btn-outline-primary" data-toggle="collapse" href="#collapseSearch" role="button"
+        aria-expanded="true" aria-controls="collapseSearch">
+        <span class="show-search">Show search</span>
+        <span class="hide-search">Hide search</span>
+    </a>
+</p>
+<div id="collapseSearch" class="collapse show">
+    <div class="content-section">
+        <form action="{% url 'hashtag' %}" method="POST">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="search_term">Search term</label>
+                </div>
+                <input type="text" class="form-control" id="search_term" name="search_term" placeholder="" title="Search term. E.g. vaccine. When left blank, it is taken as covid19.">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="start_date">Start date</label>
+                </div>
+                <input type="text" class="datepicker form-control" name="start_date" placeholder="" title="When provided, tweets posted before this date will be ignored.">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="end_date">End date</label>
+                </div>
+                <input type="text" class="datepicker form-control" name="end_date" placeholder="" title="When provided, tweets posted after this date will be ignored.">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="tweet_count">Tweet count</label>
+                </div>
+                <select class="form-control" name="tweet_count">
+                    <option selected>1,000</option>
+                    <option>5,000</option>
+                    <option>10,000</option>
+                    <option>100,000</option>
+                    <option>All</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="hashtag_count">Hashtag count</label>
+                </div>
+                <select class="form-control" name="hashtag_count">
+                    <option>5</option>
+                    <option>10</option>
+                    <option selected>20</option>
+                    <option>50</option>
+                    <option>100</option>
+                </select>
+            </div>
+    <!-- <fieldset>
+                <div class="form-group form-inline">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="person" name="person" checked>
+                        <label class="form-check-label" for="person" title="People, including fictional.">PERSON</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="norp" name="norp" checked>
+                        <label class="form-check-label" for="norp"
+                            title="Nationalities or religious or political groups.">NORP</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="fac" name="fac" checked>
+                        <label class="form-check-label" for="fac"
+                            title="Buildings, airports, highways, bridges, etc.">FAC</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="org" name="org" checked>
+                        <label class="form-check-label" for="org"
+                            title="Companies, agencies, institutions, etc.">ORG</label>
+                    </div>
+                </div>
+            </fieldset> -->
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-primary" type="submit">Analyze</button>
+        </div>
+    </fieldset>
+    </form>
+</div>
+</div>
+
+{% if div %}
+{{ div | safe }}
+{{ script | safe }}
+<p></p>
+{% elif request.type == 'POST' %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card border-primary mb-3">
+            <div class="card-body text-primary">
+                <h5 class="card-title">No results returned to analyze.</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if hashtag_count %}
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card border-primary mb-3">
+            <div class="card-header">Search term</div>
+            <div class="card-body text-primary">
+                <h6 class="card-title">{{ search_term }}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="card border-primary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Hashtag count</div>
+            <div class="card-body text-primary">
+                <h6 class="card-title">{{ hashtag_count }}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="card border-primary mb-3" style="max-width: 18rem;">
+            <div class="card-header">First tweet date</div>
+            <div class="card-body text-primary">
+                <h6 class="card-title">{{ first_tweet_date }}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="card border-primary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Last tweet date</div>
+            <div class="card-body text-primary">
+                <h6 class="card-title">{{ last_tweet_date }}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="card border-primary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Time elapsed</div>
+            <div class="card-body text-primary">
+                <h6 class="card-title">{{ time_elapsed }} sec</h6>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if div %}
+<script>
+    window.addEventListener('load', function () {
+        $('#toggleSearch').attr('aria-expanded', 'false')
+        $('#collapseSearch').removeClass('show')
+    }, false);
+</script>
+{% endif %}
+
+{% endblock content %}

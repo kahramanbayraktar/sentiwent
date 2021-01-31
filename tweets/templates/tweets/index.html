@@ -1,4 +1,95 @@
-Index
-<p>
-    {{ users }}
-</p>
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<h1><img src="https://static.thenounproject.com/png/3383089-200.png" width="48"></img> Dashboard</h1>
+
+<style>
+  .card-body {
+    padding: .75rem;
+  }
+</style>
+
+<div class="row">
+  <div class="col-md-12">
+    {% if graphic %}
+    <img src="{{ graphic | safe }}">
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-4 box-shadow">
+      <article class="media content-section border-0 m-0">
+        <h2>Recent Searches</h2>
+      </article>
+      {% for search in searches.itertuples %}
+      <article class="media content-section border-0 m-0">
+        <div class="media-body">
+          <h3>
+            <a class="article-title text-secondary" href="#" title="Search again">
+              {{ search.search_term }}
+            </a>
+            <span class="article-title" style="font-size: 1rem">
+              <i class="fa fa-clock fa-xs"></i> {{ search.created_at }}
+            </span>
+          </h3>
+          <p class="article-content form-inline d-flex justify-content-around">
+            <a class="btn btn-outline-primary btn-sm"
+              href="{% url 'tweets' search_term=search.search_term %}">Tweets</a>&nbsp;
+            <a class="btn btn-outline-warning btn-sm"
+              href="{% url 'frequency' search_term=search.search_term %}">Frequency Graph</a>&nbsp;
+            <a class="btn btn-outline-success btn-sm"
+              href="{% url 'sentiment' search_term=search.search_term %}">Sentiment Graph</a>&nbsp;
+            <a class="btn btn-outline-danger btn-sm" href="{% url 'bigram' search_term=search.search_term %}">Bigram
+              Graph</a>&nbsp;
+            <a class="btn btn-outline-info btn-sm"
+              href="{% url 'cooccurrence' search_term=search.search_term %}">Co-occurrence Graph</a>&nbsp;
+          </p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4 box-shadow text-center">
+      <article class="media content-section border-0 m-0">
+        <h2>Stats</h2>
+      </article>
+      <div class="col-sm-12">
+        <div class="card border-0" style="max-width: 18rem;">
+          <div class="card-header" style="background: none;">Tweet count</div>
+          <div class="card-body text-primary">
+            <h5 class="card-title">{{ tweet_count }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div class="card border-0" style="max-width: 18rem;">
+          <div class="card-header" style="background: none;">Search term count</div>
+          <div class="card-body text-primary">
+            <h5 class="card-title">{{ search_term_count }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div class="card border-0" style="max-width: 18rem;">
+          <div class="card-header" style="background: none;">Oldest tweet date</div>
+          <div class="card-body text-primary">
+            <h5 class="card-title">{{ min_tweet_date }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div class="card border-0" style="max-width: 18rem;">
+          <div class="card-header" style="background: none;">Latest tweet date</div>
+          <div class="card-body text-primary">
+            <h5 class="card-title">{{ max_tweet_date }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

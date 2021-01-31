@@ -1,0 +1,41 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<h1><i class="fa fa-cog"></i> Auto-Search Terms</h1>
+
+<div class="content-section">
+  <form action="{% url 'settings' %}" method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <input type="text" class="form-control" id="search_term" name="search_term" placeholder="search term">
+    </fieldset>
+    <div class=form-group>
+      <button class="btn btn-outline-primary" type="submit">Add</button>
+    </div>
+  </form>
+</div>
+
+{% for term in autosearch_terms.itertuples %}
+<article class="media content-section">
+  <div class="media-body">
+    <h2>
+      <a class="article-title" href="{% url 'settings' %}" title="Cancel auto-search for this term">
+        <i class="fa fa-power-off fa-xs text-danger"></i>
+      </a>
+      <a class="article-title text-secondary" href="{% url 'search' %}" title="Search again">
+        {{ term.search_term }}
+      </a>
+    </h2>
+    <p class="article-content form-inline d-flex justify-content-around">
+      <a class="btn btn-outline-primary btn-sm" href="{% url 'tweets' %}">Tweets</a>&nbsp;
+      <a class="btn btn-outline-warning btn-sm" href="{% url 'frequency' %}">Frequency Graph</a>&nbsp;
+      <a class="btn btn-outline-success btn-sm" href="{% url 'sentiment' %}">Sentiment Graph</a>&nbsp;
+      <a class="btn btn-outline-danger btn-sm" href="{% url 'bigram' %}">Bigram Graph</a>&nbsp;
+      <a class="btn btn-outline-info btn-sm" href="{% url 'cooccurrence' %}">Co-occurrence Graph</a>&nbsp;
+    </p>
+  </div>
+</article>
+{% endfor %}
+
+{% endblock content %}

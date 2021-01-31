@@ -1,0 +1,161 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<style>
+  .form-check {
+    padding: 0 10px 0 0 !important
+  }
+
+  fieldset {
+    padding: 10px 0 0 0 !important
+  }
+</style>
+
+<h1><i class="fab fa-twitter"></i> Tweets</h1>
+
+<style>
+  #toggleSearch[aria-expanded=true] .show-search {
+    display: none;
+  }
+
+  #toggleSearch[aria-expanded=false] .hide-search {
+    display: none;
+  }
+</style>
+
+<p>
+  <a id="toggleSearch" class="btn btn-outline-primary" data-toggle="collapse" href="#collapseSearch" role="button"
+    aria-expanded="true" aria-controls="collapseSearch">
+    <span class="show-search">Show search</span>
+    <span class="hide-search">Hide search</span>
+  </a>
+</p>
+<div id="collapseSearch" class="collapse show">
+  <div class="content-section">
+    <form action="{% url 'tweets' %}" method="POST">
+      {% csrf_token %}
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="search_term">Search term</label>
+        </div>
+        <input type="text" class="form-control" id="search_term" name="search_term" placeholder="" title="Search term. E.g. vaccine. When left blank, it is taken as covid19.">
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="start_date">Start date</label>
+        </div>
+        <input type="text" class="datepicker form-control" name="start_date" placeholder="" title="When provided, tweets posted before this date will be ignored.">
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="end_date">End date</label>
+        </div>
+        <input type="text" class="datepicker form-control" name="end_date" placeholder="" title="When provided, tweets posted after this date will be ignored.">
+    </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="tweet_count">Tweet count</label>
+        </div>
+        <select class="form-control" name="tweet_count">
+          <option selected>100</option>
+          <option>1,000</option>
+          <option>5,000</option>
+          <option>10,000</option>
+          <option>100,000</option>
+          <option>All</option>
+        </select>
+      </div>
+      <fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+{% if not tweets.empty %}
+{% for tweet in tweets.itertuples %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <small class="text-muted">{{ tweet.created_at }}</small>
+    </div>
+    <h2>
+      <i class="fa fa-{{ tweet.sent_icon_class }} text-{{ tweet.sent_color_class }}"></i>
+      <a class="article-title text-{{ tweet.sent_color_class }}" href="#">
+        {{ tweet.sentiment }}
+      </a>
+    </h2>
+    <p class="article-content">{{ tweet.tweet|safe }}</p>
+  </div>
+</article>
+{% endfor %}
+{% elif request.type == 'POST' %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card border-primary mb-3">
+            <div class="card-body text-primary">
+              <h5 class="card-title">No tweets found to display.</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if tweet_count %}
+<div class="row">
+  <div class="col-sm-2">
+    <div class="card border-primary mb-3">
+      <div class="card-header">Search term</div>
+      <div class="card-body text-primary">
+        <h6 class="card-title">{{ search_term }}</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-2">
+    <div class="card border-primary mb-3" style="max-width: 18rem;">
+      <div class="card-header">Tweet count</div>
+      <div class="card-body text-primary">
+        <h6 class="card-title">{{ tweet_count }}</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card border-primary mb-3" style="max-width: 18rem;">
+      <div class="card-header">First tweet date</div>
+      <div class="card-body text-primary">
+        <h6 class="card-title">{{ first_tweet_date }}</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card border-primary mb-3" style="max-width: 18rem;">
+      <div class="card-header">Last tweet date</div>
+      <div class="card-body text-primary">
+        <h6 class="card-title">{{ last_tweet_date }}</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-2">
+    <div class="card border-primary mb-3" style="max-width: 18rem;">
+      <div class="card-header">Time elapsed</div>
+      <div class="card-body text-primary">
+        <h6 class="card-title">{{ time_elapsed }} sec</h6>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if not tweets.empty %}
+<script>
+  window.addEventListener('load', function () {
+    $('#toggleSearch').attr('aria-expanded', 'false')
+    $('#collapseSearch').removeClass('show')
+  }, false);
+</script>
+{% endif %}
+
+{% endblock content %}

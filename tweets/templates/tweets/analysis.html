@@ -1,0 +1,89 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<style>
+    .form-check {
+        padding: 0 10px 0 0 !important
+    }
+
+    fieldset {
+        padding: 10px 0 0 0 !important
+            /* border: 1px solid #dddddd !important;
+        border-radius: 3px !important;
+        padding: 5px !important;
+        margin: 5px !important; */
+    }
+</style>
+
+<h1>Analysis</h1>
+
+<div class="content-section">
+    <form action="{% url 'analysis' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" class="form-control" id="search_term" name="search_term" placeholder="search term">
+        <fieldset>
+            <!-- <legend style="font-size: 1rem">entity types</legend> -->
+            <div class="form-group form-inline">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="person" name="person" checked>
+                    <label class="form-check-label" for="person"
+                        title="People, including fictional.">PERSON</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="norp" name="norp" checked>
+                    <label class="form-check-label" for="norp"
+                        title="Nationalities or religious or political groups.">NORP</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="fac" name="fac" checked>
+                    <label class="form-check-label" for="fac"
+                        title="Buildings, airports, highways, bridges, etc.">FAC</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="org" name="org" checked>
+                    <label class="form-check-label" for="org"
+                        title="Companies, agencies, institutions, etc.">ORG</label>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <!-- <legend style="font-size: 1rem">graph type</legend> -->
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="graph_type" id="network" value="network" checked>
+                <label class="form-check-label" for="network">Network</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="graph_type" id="chord" value="chord">
+                <label class="form-check-label" for="chord">Chord</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="graph_type" id="bigram" value="bigram">
+                <label class="form-check-label" for="bigram">Bigram</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="graph_type" id="sentiment" value="sentiment">
+                <label class="form-check-label" for="sentiment">Sentimental</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="graph_type" id="Frequency" value="frequency">
+                <label class="form-check-label" for="Frequency">Frequency</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-primary" type="submit">Display</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+{% if search_term != None %}
+<h5>Search term: {{ search_term }}</h5>
+{% endif %}
+
+{{ div | safe }}
+
+{{ script | safe }}
+
+{% endblock content %}

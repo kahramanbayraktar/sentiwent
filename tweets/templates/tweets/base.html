@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'tweets/main.css' %}">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+		integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+		crossorigin="anonymous" />
+
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bokeh/1.0.1/bokeh.min.css" integrity="sha512-G2GtPDaV7GXw4llwwjmpLfBSFnqYKHCa+GXnkIDaumjxNAetb41d3bxc/dI4uvmnsUX9jjZUkHftPFv5PXxQkA==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bokeh/1.0.1/bokeh-widgets.min.css" integrity="sha512-U7nQ8QXuWRUUkhwyrqk+ianJ/Oq0r9oCknQGSD+nUHNTvGv0oaP3u4QfZmB+PI1EMSn0ZrX+2McJPi4v5IfIoQ==" crossorigin="anonymous" /> -->
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/fontawesome.min.css"
+		integrity="sha512-shT5e46zNSD6lt4dlJHb+7LoUko9QZXTGlmWWx0qjI9UhQrElRb+Q5DM7SVte9G9ZNmovz2qIaV7IWv0xQkBkw=="
+		crossorigin="anonymous" />
+
+	<script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/js/fontawesome.min.js" integrity="sha512-pafh0hrrT9ZPZl/jx0cwyp7N2+ozgQf+YK94jSupHHLD2lcEYTLxEju4mW/2sbn4qFEfxJGZyIX/yJiQvgglpw==" crossorigin="anonymous"></script> -->
+
+	{% if title %}
+	<title>Sentiwent - {{ title }}</title>
+	{% else %}
+	<title>Sentiwent</title>
+	{% endif %}
+</head>
+
+<body>
+	<header class="site-header">
+		<nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+			<div class="container">
+				<img src="https://static.thenounproject.com/png/3383089-200.png" width="32"></img>&nbsp;<a class="navbar-brand mr-4" style="color: #000" href="{% url 'index' %}">SENTIWENT</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+					aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarToggle">
+					<div class="navbar-nav mr-auto">
+						<a class="nav-item nav-link" href="{% url 'tweets' %}"><i class="fab fa-twitter"></i> Tweets</a>
+						<a class="nav-item nav-link" href="{% url 'frequency' %}"><i class="fa fa-chart-bar"></i> Frequency</a>
+						<a class="nav-item nav-link" href="{% url 'hashtag' %}"><i class="fa fa-hashtag"></i> Hashtag</a>
+						<a class="nav-item nav-link" href="{% url 'sentiment' %}"><i class="fa fa-theater-masks"></i> Sentiment</a>
+						<a class="nav-item nav-link" href="{% url 'bigram' %}"><i class="fa fa-dice-two"></i> Bigram</a>
+						<a class="nav-item nav-link" href="{% url 'cooccurrence' %}"><i class="fa fa-list"></i> Co-occurrence</a>
+						<a class="nav-item nav-link" href="{% url 'search' %}"><i class="fa fa-search"></i> Search</a>
+					</div>
+					<!-- Navbar Right Side -->
+					<div class="navbar-nav">
+						{% if user.is_authenticated %}
+						<a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fa fa-user"></i> {{ user }}</a>
+						<a class="nav-item nav-link" href="{% url 'settings' %}" title="Settings"><i class="fa fa-cog"></i></a>
+						<a class="nav-item nav-link" href="{% url 'logout' %}" title="Logout"> <i class="fa fa-sign-out-alt"></i></a>
+						{% else %}
+						<a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+						<a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main role="main" class="container">
+		<div class="row">
+			<div class="col-md-12">
+				{% if messages %}
+				{% for message in messages %}
+				<div class="alert alert-{{ message.tags }}">
+					{{ message }}
+				</div>
+				{% endfor %}
+				{% endif %}
+				{% block content %}{% endblock %}
+			</div>
+			<!--<div class="col-md-4">
+	      <div class="content-section">
+	        <h3>Our Sidebar</h3>
+	        <p class='text-muted'>You can put any information here you'd like.
+	          <ul class="list-group">
+	            <li class="list-group-item list-group-item-light">Latest Posts</li>
+	            <li class="list-group-item list-group-item-light">Announcements</li>
+	            <li class="list-group-item list-group-item-light">Calendars</li>
+	            <li class="list-group-item list-group-item-light">etc</li>
+	          </ul>
+	        </p>
+	      </div>
+	    </div> -->
+		</div>
+	</main>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+		integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+		integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.2.3/bokeh.min.js"
+		integrity="sha512-x3Vkyovm5LWmdkjZgP4YDWK9mcz8Ab0nKj5wi5Uz80schrJKGijIZVX4OPom5Clpeq2ExBHKwl8EciMe1W8eqw=="
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/2.2.3/bokeh-widgets.min.js"
+		integrity="sha512-1pV49McIgzqteof3kLDZf6bZP6NJ7CPOYek53wRiiITv+qAQM9ds9g6h/N3sEY6ECiVE+h7lDGZJAz5qKmXDyQ=="
+		crossorigin="anonymous"></script>
+
+	<script>
+		$(function () {
+			$(".datepicker").datepicker();
+		});
+	</script>
+</body>
+
+</html>

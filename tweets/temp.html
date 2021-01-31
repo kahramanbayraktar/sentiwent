@@ -1,0 +1,108 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": "ontario", "label": "ontario", "shape": "dot", "title": "ontario"}, {"id": "york 245", "label": "york 245", "shape": "dot", "title": "york 245"}, {"id": "chinese", "label": "chinese", "shape": "dot", "size": 10}, {"id": "heilongjiang", "label": "heilongjiang", "shape": "dot", "size": 10}, {"id": "saturday", "label": "saturday", "shape": "dot", "size": 10}, {"id": "73", "label": "73", "shape": "dot", "size": 10}, {"id": "9", "label": "9", "shape": "dot", "size": 10}, {"id": "friday", "label": "friday", "shape": "dot", "size": 10}, {"id": "63", "label": "63", "shape": "dot", "size": 10}, {"id": "19", "label": "19", "shape": "dot", "size": 10}, {"id": "oakville", "label": "oakville", "shape": "dot", "size": 10}, {"id": "milton", "label": "milton", "shape": "dot", "size": 10}, {"id": "897", "label": "897", "shape": "dot", "size": 10}, {"id": "ottawa", "label": "ottawa", "shape": "dot", "size": 10}, {"id": "coronavirus", "label": "coronavirus", "shape": "dot", "size": 10}, {"id": "algerie", "label": "algerie", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": "ontario", "to": "york 245", "value": 2}, {"from": "chinese", "to": "heilongjiang", "weight": 5}, {"from": "chinese", "to": "saturday", "weight": 4}, {"from": "chinese", "to": "73", "weight": 4}, {"from": "chinese", "to": "9", "weight": 3}, {"from": "chinese", "to": "friday", "weight": 3}, {"from": "chinese", "to": "63", "weight": 3}, {"from": "heilongjiang", "to": "friday", "weight": 3}, {"from": "saturday", "to": "73", "weight": 4}, {"from": "saturday", "to": "63", "weight": 3}, {"from": "saturday", "to": "9", "weight": 3}, {"from": "73", "to": "63", "weight": 3}, {"from": "73", "to": "9", "weight": 3}, {"from": "73", "to": "19", "weight": 2}, {"from": "63", "to": "9", "weight": 3}, {"from": "oakville", "to": "milton", "weight": 3}, {"from": "897", "to": "ottawa", "weight": 2}, {"from": "897", "to": "york 245", "weight": 2}, {"from": "897", "to": "ontario", "weight": 2}, {"from": "coronavirus", "to": "algerie", "weight": 2}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

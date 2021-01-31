@@ -1,0 +1,56 @@
+{% extends "tweets/base.html" %}
+
+{% block content %}
+
+<h1><i class="fa fa-search"></i> Search</h1>
+
+<div class="content-section">
+    <form action="{% url 'search' %}" method="GET">
+        <fieldset class="form-group">
+            <input type="text" class="form-control" id="search_term" name="search_term" placeholder="search term">
+        </fieldset>
+        <div class=form-group>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="include_synonyms" name="include_synonyms">
+                <label class="form-check-label" for="exampleCheck1">Include synonyms and similar words</label>
+            </div>
+        </div>
+        <div class=form-group>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="save_search" name="save_search" checked>
+                <label class="form-check-label" for="save_search">Save this search for later uses</label>
+            </div>
+        </div>
+        <div class=form-group>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="save_tweets" name="save_tweets" checked>
+                <label class="form-check-label" for="save_tweets">Save tweets to database</label>
+            </div>
+        </div>
+        <div class=form-group>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="repeatable" name="repeatable" checked>
+                <label class="form-check-label" for="repeatable">Periodically repeat this search for finer results</label>
+            </div>
+        </div>
+        <div class=form-group>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="display_results" name="display_results" checked>
+                <label class="form-check-label" for="display_results">Display results after</label>
+            </div>
+        </div>
+        <div class=form-group>
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+{% if search_term %}
+<h5>Search term: {{ search_term }}</h5>
+{% endif %}
+
+{{ div | safe }}
+
+{{ script | safe }}
+
+{% endblock content %}
