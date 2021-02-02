@@ -15,7 +15,6 @@ from tweets.functions import Functions
 from tweets.analysis import Analysis
 from tweets.visuals import Visualization
 from tweets.data_cleaner import DataCleaner
-from tweets.models import Entity
 from tweets.background_tasks import collect_data, extract_entities, update_dates, update_hashtags, update_cooc
 
 DEF_SEARCH_TERM = 'covid19'
@@ -400,38 +399,6 @@ def cooccurrence(request, search_term=None):
     }
 
     return render(request, 'tweets/cooccurrence.html', context)
-
-# TODO: Remove if it is still unused right before the release.
-@login_required
-def entity(request):
-    if request.method == "GET" and not request.GET.get('search_term'):
-        return render(request, 'tweets/entity.html')
-
-    search_term = request.POST['search_term']
-    if not search_term:
-        search_term = DEF_SEARCH_TERM
-    
-    db = Database()
-    ent_ext = EntityExtraction()
-
-    tweets = db.get_tweets(search_term, max=10)
-
-    entweets = ent_ext.entities(tweets)
-
-    # entities = []
-    # for tweet in entweets:
-    #     ent_list = []
-    #     for ent in tweet:
-    #         entities.append(Entity(ent['title'], ent['uri']), '')           
-    #         ent_list.append(ent)
-    #     tweet.append(ent_list)
-
-    context = {
-        'search_term': search_term,
-        'tweets': entweets
-    }
-
-    return render(request, 'tweets/entity.html', context)
 
 @login_required
 def settings(request):

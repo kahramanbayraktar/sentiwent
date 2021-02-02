@@ -20,9 +20,3 @@ class AutoSearch(models.Model):
     search_term = models.CharField(max_length=100)
     user_id = models.IntegerField()
     created_at = models.DateTimeField(default=datetime.now, blank=True)
-
-class Entity:
-    def __init__(self, title, uri, image):
-        self.title = title
-        self.uri = uri
-        self.image = image
