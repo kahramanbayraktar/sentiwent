@@ -15,7 +15,6 @@ urlpatterns = [
     path('frequency/<str:search_term>', views.frequency, name='frequency'),
     path('hashtag/', views.hashtag, name='hashtag'),
     path('hashtag/<str:search_term>', views.hashtag, name='hashtag'),
-    path('entity/', views.entity, name='entity'),
     path('search/', views.search, name='search'),
     path('search/<str:search_term>', views.search, name='search'),
     path('settings/', views.settings, name='settings'),
