@@ -28,7 +28,10 @@ def index(request):
     stats = db.get_dashboard_stats(request.user.id)
     df_hashtags = db.get_hashtags_offline()
 
-    graphic = vis.word_cloud(df_hashtags)
+    graphic = ''
+
+    if len(df_hashtags.index) > 0:
+        graphic = vis.word_cloud(df_hashtags)
 
     context = {
         'searches': searches,
