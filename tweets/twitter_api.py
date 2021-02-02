@@ -9,9 +9,6 @@ from django.core.exceptions import ImproperlyConfigured
 import requests
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 api_key = config('TW_API_KEY')
 api_key_secret = config('TW_API_KEY_SECRET')
 access_token = config('TW_ACCESS_TOKEN')

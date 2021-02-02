@@ -14,25 +14,7 @@ class Functions:
         df = pd.json_normalize(json_data)
         return df
 
-    # def to_date_from_twitter_date(self, tw_date):
-    #     # new_datetime = datetime.strftime(datetime.strptime(tw_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d %H:%M:%S')
-    #     new_datetime = datetime.strftime(datetime.strptime(tw_date,'%a %b %d %H:%M:%S +0000 %Y'), '%Y-%m-%d')
-    #     return new_datetime
-
     def remove_url(self, text):
-        """Replace URLs found in a text string with nothing 
-        (i.e. it will remove the URL from the string).
-
-        Parameters
-        ----------
-        txt : string
-            A text string that you want to parse and remove urls.
-
-        Returns
-        -------
-        The same txt string with url's removed.
-        """
-        
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         no_url = url_pattern.sub(r'', text)
 

@@ -9,10 +9,6 @@
 
     fieldset {
         padding: 10px 0 0 0 !important
-            /* border: 1px solid #dddddd !important;
-        border-radius: 3px !important;
-        padding: 5px !important;
-        margin: 5px !important; */
     }
 </style>
 
@@ -23,7 +19,6 @@
         {% csrf_token %}
         <input type="text" class="form-control" id="search_term" name="search_term" placeholder="search term">
         <fieldset>
-            <!-- <legend style="font-size: 1rem">entity types</legend> -->
             <div class="form-group form-inline">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="person" name="person" checked>
@@ -48,7 +43,6 @@
             </div>
         </fieldset>
         <fieldset>
-            <!-- <legend style="font-size: 1rem">graph type</legend> -->
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="graph_type" id="network" value="network" checked>
                 <label class="form-check-label" for="network">Network</label>

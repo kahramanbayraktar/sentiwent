@@ -27,7 +27,6 @@ class Analysis():
         nested_word_lists = [tweet.lower().split(sep) for tweet in df[col]]
 
         # Exclude unwanted words
-        # nested_word_lists = [word.strip() for word in nested_word_lists if word.strip() not in excluded_words]
         nested_word_lists = [[word.strip() for word in word_list if word.strip() != '' and word.strip() not in excluded_words] for word_list in nested_word_lists]
 
         # Convert to a dictionary containing all words with the number of appearances
@@ -69,41 +68,3 @@ class Analysis():
         df_cooc = df_stack.sort_values('weight', ascending=False).head(count)
 
         return df_matrix, df_cooc
-
-    # Keep this code for possible later uses
-    # def cooccurrence2(self, df, word1, count, ent_types=["PERSON", "NORP", "FAC", "ORG", "GPE", "LOC", "EVENT"]):
-    #     # Clean data
-    #     cleaner = DataCleaner()
-    #     df = cleaner.remove_emojis(df)
-    #     df = cleaner.lowercase(df)
-    #     df = cleaner.remove_emails(df)
-    #     df = cleaner.remove_urls(df)
-    #     df = cleaner.remove_rts(df)
-    #     df = cleaner.remove_stopwords(df)
-    #     df = cleaner.remove_punctuations(df)
-
-    #     nlp = spacy.load("en_core_web_sm")
-
-    #     # punctuation = list(string.punctuation)
-    #     # stop_words = stopwords.words('english') + punctuation + ['&amp;', '&amp;amp' 'another']
-
-    #     df_counts = pd.DataFrame(columns=['word1', 'word2', 'count'])
-
-    #     # TODO: consider only most occurred words as word2 (pull this info from database beforehand)
-
-    #     for i, row in df.iterrows():
-    #         doc = nlp(row.tweet)
-
-    #         for ent in doc.ents:
-    #             if ent.label_ in ent_types and ent.text != word1:
-    #                 df_ = df_counts.loc[(df_counts["word1"] == word1) & (df_counts["word2"] == ent.text)]
-
-    #                 cnt = 1
-                    
-    #                 if not df_.empty:
-    #                     cnt = int(df_counts.iloc[0]['count'])
-    #                     df_counts.loc[(df_counts["word1"] == word1) & (df_counts["word2"] == ent.text), ['count']] = count + 1
-    #                 else:
-    #                     df_counts = df_counts.append(pd.DataFrame([[word1, ent.text, count]], columns=df_counts.columns), ignore_index=True)
-
-    #     return df_counts.sort_values('count', ascending=False).head(count)

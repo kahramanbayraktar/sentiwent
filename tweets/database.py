@@ -40,7 +40,6 @@ class Database:
         logger = logging.getLogger(__name__)
 
         try:
-            # TODO: Only those who have entities?
             sql = "SELECT TOP " + str(max) + " tweet, sentiment, created_at FROM tweets_tweet WHERE tweet LIKE '%" + search_term + "%'"
             if start_date:
                 sql += " AND created_at >= '{}'".format(start_date)
@@ -61,14 +60,13 @@ class Database:
         logger = logging.getLogger(__name__)
 
         try:
-            # TODO: Remove "created_at IS NOT NULL AND" later
             fields = " entities, created_at"
             if include_sentiment:
                 fields += ", sentiment"
 
             sql = "SELECT TOP {}".format(max)
             sql += fields
-            sql += " FROM tweets_tweet WHERE created_at IS NOT NULL AND entities IS NOT NULL AND entities != ''"
+            sql += " FROM tweets_tweet WHERE entities IS NOT NULL AND entities != ''"
 
             if search_term:                
                 sql += " AND (entities LIKE '{}, %' OR entities LIKE '% {},%' OR entities LIKE '% {}' OR entities = '{}')"
@@ -140,7 +138,6 @@ class Database:
             with connection.cursor() as cursor:
                 cursor.execute(sql, (user_id, search_term, dt.now()))
                 connection.commit()
-        # except (Exception, pg.DatabaseError) as error:
         except (Exception) as error:
             print(error)
             logger.error(error)
@@ -171,7 +168,6 @@ class Database:
             with connection.cursor() as cursor:
                 cursor.execute(sql, (user_id, search_term, user_id, search_term, dt.now()))
                 connection.commit()
-        # except (Exception, pg.DatabaseError) as error:
         except (Exception) as error:
             print(error)
             logger.error(error)
@@ -205,10 +201,10 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def get_max_tweet_id(self): #, search_term):
+    def get_max_tweet_id(self):
         logger = logging.getLogger(__name__)
 
-        sql = "SELECT MAX(tweet_id) FROM tweets_tweet;" # WHERE tweet LIKE '%" + search_term + "%';"
+        sql = "SELECT MAX(tweet_id) FROM tweets_tweet;"
 
         try:
             with connection.cursor() as cursor:

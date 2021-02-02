@@ -21,14 +21,6 @@ DEF_SEARCH_TERM = 'covid19'
 
 @login_required
 def index(request):
-    # ISSUE: background_task library doesn't start tasks with the command python manage.py process_tasks as stated.
-    # Because of that, it is sometimes needed to trigger the tasks from here.
-    # update_dates(repeat=150)
-    # collect_data(repeat=900)
-    # extract_entities(repeat=150)    
-    # update_hashtags(repeat=3600)
-    # update_cooc(repeat=7200)
-        
     db = Database()
     vis = Visualization()
     
@@ -36,7 +28,7 @@ def index(request):
     stats = db.get_dashboard_stats(request.user.id)
     df_hashtags = db.get_hashtags_offline()
 
-    # graphic = vis.word_cloud(df_hashtags)
+    graphic = vis.word_cloud(df_hashtags)
 
     context = {
         'searches': searches,
@@ -44,7 +36,7 @@ def index(request):
         'search_term_count': stats['search_term_count'][0],
         'min_tweet_date': stats['min_tweet_date'][0],
         'max_tweet_date': stats['max_tweet_date'][0],
-        # 'graphic': graphic,
+        'graphic': graphic,
     }
 
     return render(request, 'tweets/index.html', context)
@@ -147,12 +139,6 @@ def frequency(request, search_term=None):
     if result_size:
         result_size = int(result_size.replace(',', ''))
 
-    # if (start_date and end_date):
-    #     date1 = time.strptime(start_date, "%m/%d/%Y")
-    #     date2 = time.strptime(end_date, "%m/%d/%Y")
-    #     if (date1 > date2):
-    #         raise ValidationError('Start date cannot be greater than end date.')
-
     db = Database()
     analysis = Analysis()
     vis = Visualization()
@@ -168,7 +154,7 @@ def frequency(request, search_term=None):
     last_tweet_date = ''
     
     if not tweets.empty:
-        excluded_words = [search_term] # TODO: more words to exclude? similar words? synonyms?
+        excluded_words = [search_term]
         excluded_words += cleaner.excluded_tokens
         df = analysis.frequency(df=tweets, excluded_words=excluded_words, count=result_size)
         
@@ -202,12 +188,6 @@ def hashtag(request, search_term=None):
     hashtag_count = request.POST.get('hashtag_count', None)
     if hashtag_count:
         hashtag_count = int(hashtag_count.replace(',', ''))
-
-    # if (start_date and end_date):
-    #     date1 = time.strptime(start_date, "%m/%d/%Y")
-    #     date2 = time.strptime(end_date, "%m/%d/%Y")
-    #     if (date1 > date2):
-    #         raise ValidationError('Start date cannot be greater than end date.')
 
     db = Database()
     analysis = Analysis()
@@ -248,8 +228,6 @@ def sentiment(request, search_term=None):
     tweet_count = request.POST.get('tweet_count', None)
     if tweet_count:
         tweet_count = int(tweet_count.replace(',', ''))
-
-    # if not search_term and tweet_count < 5000
     
     db = Database()
     analysis = Analysis()
@@ -313,7 +291,7 @@ def bigram(request, search_term=None):
     last_tweet_date = ''
     
     if not tweets.empty:
-        excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
+        excluded_terms = [search_term]
         excluded_terms += cleaner.excluded_tokens
         df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, ngram=(2,2), count=result_size)
 
@@ -370,7 +348,7 @@ def cooccurrence(request, search_term=None):
         # df_coocmatrix = db.get_coocmatrix(search_term)
         # df_cooc = db.get_cooc(search_term)
 
-        # TODO: remove later
+        # TODO: Use this approach once it runs stable
         # if df_coocmatrix.empty or df_cooc.empty:
         excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
         excluded_terms += cleaner.excluded_tokens
@@ -429,15 +407,3 @@ def extract_search_term(request, search_term, use_default=False):
         search_term = request.POST['search_term']
 
     return search_term
-
-# def extract_entity_types(request):
-#     ent_person = request.POST.get('ent-person')
-#     ent_norp = request.POST.get('ent-norp')
-
-#     ent_types = []
-#     if ent_person:
-#         ent_types.append('PERSON')
-#     if ent_norp:
-#         ent_types.append('NORP')
-
-#     return ent_types

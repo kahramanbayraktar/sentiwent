@@ -160,27 +160,24 @@ class DataCleaner:
     def _expand_contractions(self, text, contraction_mapping=contractions):
         
         contractions_pattern = re.compile('({})'.format('|'.join(contraction_mapping.keys())), 
-                                        flags=re.IGNORECASE|re.DOTALL)            # re.compile("(ain't|aren't|can't|can't've|'cause|could've|couldn't|couldn't've|didn't|doesn't|don't|hadn't|hadn't've|hasn't|haven't|he'd|he'd've|he'll|he'll've|he's|how'd|how'd'y|how'll|how's|I'd|I'd've|I'll|I'll, re.IGNORECASE|re.DOTALL)
+                                        flags=re.IGNORECASE|re.DOTALL)
 
         def expand_match(contraction):
-            match = contraction.group(0)                                            # Y'all
-            first_char = match[0]                                                   # Y
+            match = contraction.group(0)
+            first_char = match[0]
             
             expanded_contraction = contraction_mapping.get(match)\
                                     if contraction_mapping.get(match)\
-                                    else contraction_mapping.get(match.lower())     # you all
+                                    else contraction_mapping.get(match.lower())
             
             try:
-                expanded_contraction = first_char + expanded_contraction[1:]          # You all
+                expanded_contraction = first_char + expanded_contraction[1:]
             except TypeError:
-                # print(contraction, expanded_contraction, first_char)
                 pass
 
             return expanded_contraction
             
-        expanded_text = contractions_pattern.sub(expand_match, text)                # You all think
-
-        # expanded_text = re.sub("'", "", expanded_text)                            # You all think
+        expanded_text = contractions_pattern.sub(expand_match, text)
         
         return expanded_text
 
@@ -191,14 +188,14 @@ class DataCleaner:
     # 3
     def remove_emails(self, df):
         regex = '([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)'
-        df['emails'] = df[self.col].apply(lambda x: re.findall(regex, x)) # save emails into another column
+        df['emails'] = df[self.col].apply(lambda x: re.findall(regex, x))
         df[self.col] = df[self.col].str.replace(regex, '')
         return df
 
     # 4
     def remove_urls(self, df):
         regex_url = '(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))?'
-        df['urls'] = df[self.col].apply(lambda x: re.findall(regex_url, x)) # save urls into another column
+        df['urls'] = df[self.col].apply(lambda x: re.findall(regex_url, x))
         df[self.col] = df[self.col].apply(lambda x: re.sub(regex_url, '', x))
         return df
 
@@ -211,7 +208,7 @@ class DataCleaner:
     # 6
     def remove_mentions(self, df):
         regex_mention = '\B@\w+'
-        df['mentions'] = df[self.col].apply(lambda x: re.findall(regex_mention, x)) # save mentions into another column
+        df['mentions'] = df[self.col].apply(lambda x: re.findall(regex_mention, x))
         df[self.col] = df[self.col].apply(lambda x: re.sub(regex_mention, '', x))
         return df
 
@@ -239,15 +236,13 @@ class DataCleaner:
         return df
 
     def remove_non_entities(self, df):
-        # start = time.time()
-        nlp = spacy.load('en_core_web_sm') ##TODO: remove?
+        nlp = spacy.load('en_core_web_sm')
         ent_types = ["PERSON", "ORG", "PRODUCT", "PROPN", "GPE"]
         df['entities'] = df[self.col].apply(lambda x: (' '.join(ent.text for ent in nlp(x).ents if ent.label_ in ent_types)))
-        # print("removing non-entities: ", time.time() - start)
         return df
 
     def extract_entities(self, text):
-        nlp = spacy.load('en_core_web_sm') ##TODO: remove?
+        nlp = spacy.load('en_core_web_sm')
         ent_types = ["PERSON", "NORP", "FAC", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"]
         ents = ', '.join(ent.text for ent in nlp(text).ents if ent.label_ in ent_types and ent.text not in ['#', '1', '2', '3', '000', '??'])
         return ents

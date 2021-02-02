@@ -18,9 +18,6 @@ from bokeh.models.glyphs import MultiLine
 from bokeh.transform import linear_cmap
 from wordcloud import WordCloud, STOPWORDS
 
-# !pip install pyvis
-# !pip install dimcli
-# from dimcli.core.extras import NetworkViz
 from pyvis.network import Network
 
 class Visualization:
@@ -33,23 +30,16 @@ class Visualization:
         df_sum['date'] = pd.to_datetime(df_sum['date'])
 
         df_pos = df_sum[df_sum['sent_label'] == 'pos']
-        # row = {'date':'2020-12-07 00:00:00', 'sentiment':'pos', 'count':300}
-        # df_pos = df_pos.append(row, ignore_index=True)
         df_neu = df_sum[df_sum['sent_label'] == 'neu']
         df_neg = df_sum[df_sum['sent_label'] == 'neg']
 
         plot = figure(plot_width=1135, plot_height=500, x_axis_type="datetime")
-        # plot.title.text = 'Positive/Neutral/Negative Tweet Counts Per Day'
 
         plot.xaxis.axis_label = 'time'
         plot.yaxis.axis_label = 'tweet count'
 
         xs = [df_pos['date'], df_neu['date'], df_neg['date']]
         ys = [df_pos['count'], df_neu['count'], df_neg['count']]
-
-        # p.multi_line(xs, ys, color=['green', 'grey', 'red'], alpha=0.5, line_width=2)
-        # p.circle(df_pos['date'], df_sum['count'], legend_label='positive', fill_color='green', line_color='green', line_width=2)
-        # p.circle(df_pos['date'], df_pos['count'], legend_label="positive", fill_color="green", line_color="green", size=6)
         
         plot.line(df_pos['date'], df_pos['count'], legend_label="positive", line_color="green", line_width=2)
         plot.line(df_neu['date'], df_neu['count'], legend_label="neutral", line_color="grey", line_width=2)
@@ -59,13 +49,7 @@ class Visualization:
         plot.circle(df_neu['date'], df_neu['count'], size=20, color="grey", alpha=0.5)
         plot.circle(df_neg['date'], df_neg['count'], size=20, color="red", alpha=0.5)
 
-        # plot.legend.location = "top_left"
-
         script, div = components(plot)
-        # context = super(Visualization, self).get_context_data()
-        # context['script'] = script
-        # context['div'] = div
-
         return script, div
 
     def network_dynamic(self, df):
@@ -74,7 +58,7 @@ class Visualization:
         # Establish which categories will appear when hovering over each node
         HOVER_TOOLTIPS = [("", "@index")]
 
-        #Create a plot — set dimensions, toolbar, and title
+        # Create a plot — set dimensions, toolbar, and title
         plot = figure(tooltips = HOVER_TOOLTIPS, tools="pan,wheel_zoom,save,reset", active_scroll='wheel_zoom', x_range=Range1d(-10.1, 10.1), y_range=Range1d(-10.1, 10.1), plot_width=1000, title='')
 
         # Create a network graph object with spring layout
@@ -85,10 +69,6 @@ class Visualization:
 
         # Set edge opacity and width
         network_graph.edge_renderer.glyph = MultiLine(line_alpha=0.5, line_width=1)
-
-        # # add different colors for each node
-        # network_graph.node_renderer.data_source.data['color'] = list(G.nodes)
-        # network_graph.node_renderer.glyph = Circle(size=15, fill_color=linear_cmap('color', 'Spectral8', min(G.nodes), max(G.nodes)))
 
         #Add network graph to the plot
         plot.renderers.append(network_graph)
@@ -101,7 +81,6 @@ class Visualization:
         plt.figure(figsize=(15, 6))
         plt.tight_layout()
         plt.box(False)
-        # plt.title(title, fontsize=8)
 
         # Create graph
         graph = nx.from_pandas_edgelist(df, source='word1', target='word2')        
@@ -128,8 +107,6 @@ class Visualization:
     def network_pyvis(self, df):
         G = nx.from_pandas_edgelist(df, edge_attr=True)
 
-        # print(nx.to_dict_of_dicts(G))
-
         net = Network(height="500px", width="100%", heading='')
 
         sources = df['source']
@@ -150,13 +127,10 @@ class Visualization:
         neighbor_map = net.get_adj_list()
 
         net.from_nx(G)
-        # net.show_buttons(filter_=['physics'])
-
         net.write_html('tweets/temp.html')
         return net.html
 
     def frequency(self, df, search_term):
-        # title = "Most frequent words occurred in the same tweet with '" + search_term + "'"
         plot = figure(x_range=df['word'], plot_width=1135, plot_height=500, title='')
         plot.vbar(x=df['word'], top=df['count'], width=0.9)
 
