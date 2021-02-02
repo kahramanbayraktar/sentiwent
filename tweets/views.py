@@ -130,9 +130,7 @@ def search(request, search_term=None):
         'search_term': search_term
     }
 
-    base_url = reverse('index') # /index/
-    query_string =  urlencode({'search_term': search_term}) # search_name=covid19
-    url = '{}?{}'.format(base_url, query_string) # /index/?search_name=covid19
+    url = reverse('index')
     return redirect(url)
 
 @login_required
