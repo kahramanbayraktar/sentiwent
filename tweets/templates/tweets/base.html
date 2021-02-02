@@ -46,24 +46,18 @@
 						<a class="nav-item nav-link" href="{% url 'tweets' %}"><i class="fab fa-twitter"></i> Tweets</a>
 						<a class="nav-item nav-link" href="{% url 'frequency' %}"><i class="fa fa-chart-bar"></i>
 							Frequency</a>
-						<a class="nav-item nav-link" href="{% url 'hashtag' %}"><i class="fa fa-hashtag"></i>
-							Hashtag</a>
-						<a class="nav-item nav-link" href="{% url 'sentiment' %}"><i class="fa fa-theater-masks"></i>
-							Sentiment</a>
+						<a class="nav-item nav-link" href="{% url 'hashtag' %}"><i class="fa fa-hashtag"></i> Hashtag</a>
+						<a class="nav-item nav-link" href="{% url 'sentiment' %}"><i class="fa fa-theater-masks"></i> Sentiment</a>
 						<a class="nav-item nav-link" href="{% url 'bigram' %}"><i class="fa fa-dice-two"></i> Bigram</a>
-						<a class="nav-item nav-link" href="{% url 'cooccurrence' %}"><i class="fa fa-list"></i>
-							Co-occurrence</a>
+						<a class="nav-item nav-link" href="{% url 'cooccurrence' %}"><i class="fa fa-list"></i> Co-occurrence</a>
 						<a class="nav-item nav-link" href="{% url 'search' %}"><i class="fa fa-search"></i> Search</a>
 					</div>
 					<!-- Navbar Right Side -->
 					<div class="navbar-nav">
 						{% if user.is_authenticated %}
-						<a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fa fa-user"></i> {{ user
-							}}</a>
-						<a class="nav-item nav-link" href="{% url 'settings' %}" title="Settings"><i
-								class="fa fa-cog"></i></a>
-						<a class="nav-item nav-link" href="{% url 'logout' %}" title="Logout"> <i
-								class="fa fa-sign-out-alt"></i></a>
+						<a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fa fa-user"></i> {{ user }}</a>
+						<a class="nav-item nav-link" href="{% url 'settings' %}" title="Settings"><i class="fa fa-cog"></i></a>
+						<a class="nav-item nav-link" href="{% url 'logout' %}" title="Logout"> <i class="fa fa-sign-out-alt"></i></a>
 						{% else %}
 						<a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
 						<a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
