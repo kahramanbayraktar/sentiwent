@@ -7,3 +7,4 @@ tweets/__pycache__/
 tweets/migrations/__pycache__/
 users/__pycache__/
 users/migrations/__pycache__/
+tweets/temp.html
