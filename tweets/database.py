@@ -4,6 +4,7 @@ import traceback
 import sys
 import pandas as pd
 import logging
+from datetime import datetime as dt
 
 from tweets.data_cleaner import DataCleaner
 from tweets.analysis import Analysis
@@ -133,11 +134,11 @@ class Database:
     def insert_search(self, search_term, user_id):
         logger = logging.getLogger(__name__)
 
-        sql = "INSERT INTO tweets_search (user_id, search_term) VALUES (%s, %s);"
+        sql = "INSERT INTO tweets_search (user_id, search_term, created_at) VALUES (%s, %s, %s);"
         
         try:
             with connection.cursor() as cursor:
-                cursor.execute(sql, (user_id, search_term))
+                cursor.execute(sql, (user_id, search_term, dt.now()))
                 connection.commit()
         # except (Exception, pg.DatabaseError) as error:
         except (Exception) as error:
@@ -164,11 +165,11 @@ class Database:
         logger = logging.getLogger(__name__)
 
         sql = "IF NOT EXISTS(SELECT * FROM tweets_autosearch WHERE user_id = %s AND search_term = %s) "
-        sql += "INSERT INTO tweets_autosearch (user_id, search_term) VALUES (%s, %s)"
+        sql += "INSERT INTO tweets_autosearch (user_id, search_term, created_at) VALUES (%s, %s, %s)"
 
         try:
             with connection.cursor() as cursor:
-                cursor.execute(sql, (user_id, search_term, user_id, search_term))
+                cursor.execute(sql, (user_id, search_term, user_id, search_term, dt.now()))
                 connection.commit()
         # except (Exception, pg.DatabaseError) as error:
         except (Exception) as error:
@@ -320,9 +321,9 @@ class Database:
                     source = row['source']
                     target = row['target']
                     weight = row['weight']
-                    sql_ins = "INSERT INTO tweets_cooc (search_term, source, target, weight) VALUES (%s, %s, %s, %s);"
-                    cursor.execute(sql_ins, (search_term, source, target, weight))
-                    connection.commit()
+                    sql_ins = "INSERT INTO tweets_cooc (search_term, source, target, weight, created_at) VALUES (%s, %s, %s, %s, %s);"
+                    cursor.execute(sql_ins, (search_term, source, target, weight, dt.now()))
+                connection.commit()
         except (Exception) as error:
             print(error)
             logger.error(error)
@@ -361,8 +362,8 @@ class Database:
                     sql = "UPDATE tweets_coocmatrix SET matrix = %s WHERE search_term = %s;"
                     cursor.execute(sql, (matrix, search_term))
                 else:
-                    sql = "INSERT INTO tweets_coocmatrix (search_term, matrix) VALUES (%s, %s);"
-                    cursor.execute(sql, (search_term, matrix))
+                    sql = "INSERT INTO tweets_coocmatrix (search_term, matrix, created_at) VALUES (%s, %s, %s);"
+                    cursor.execute(sql, (search_term, matrix, dt.now()))
                 connection.commit()
         except (Exception) as error:
             print(error)
@@ -393,7 +394,7 @@ class Database:
         try:
             sql =   "DECLARE @max_id INT;" \
                     " SELECT @max_id = MAX(id) FROM tweets_hashtag;" \
-                    " INSERT INTO tweets_hashtag (hashtag, [count])" \
+                    " SELECT w.VALUE hashtag, COUNT(*) [count], GETDATE()" \
                     " SELECT w.VALUE hashtag, COUNT(*) [count]" \
                     " FROM tweets_tweet AS t" \
                     "    CROSS APPLY (" \
