@@ -317,9 +317,9 @@ def bigram(request, search_term=None):
     if not tweets.empty:
         excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
         excluded_terms += cleaner.excluded_tokens
-        df_cooc_matrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, ngram=(2,2), count=result_size)
+        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, ngram=(2,2), count=result_size)
 
-        db.upsert_cooc_matrix(search_term, df_cooc_matrix)
+        db.upsert_coocmatrix(search_term, df_coocmatrix)
         db.upsert_cooc(search_term, df_cooc)
 
         html = vis.network_pyvis(df_cooc)
@@ -369,16 +369,16 @@ def cooccurrence(request, search_term=None):
     last_tweet_date = ''
     
     if not tweets.empty:
-        # df_cooc_matrix = db.get_cooc_matrix(search_term)
+        # df_coocmatrix = db.get_coocmatrix(search_term)
         # df_cooc = db.get_cooc(search_term)
 
         # TODO: remove later
-        # if df_cooc_matrix.empty or df_cooc.empty:
+        # if df_coocmatrix.empty or df_cooc.empty:
         excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
         excluded_terms += cleaner.excluded_tokens
-        df_cooc_matrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, count=result_size)
+        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, count=result_size)
 
-        db.upsert_cooc_matrix(search_term, df_cooc_matrix)
+        db.upsert_coocmatrix(search_term, df_coocmatrix)
         db.upsert_cooc(search_term, df_cooc)
 
         html = vis.network_pyvis(df_cooc)

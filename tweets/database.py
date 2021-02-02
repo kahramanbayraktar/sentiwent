@@ -344,24 +344,24 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def upsert_cooc_matrix(self, search_term, df):
+    def upsert_coocmatrix(self, search_term, df):
         logger = logging.getLogger(__name__)
         cleaner = DataCleaner()
         
         try:
             with connection.cursor() as cursor:
-                # Get existing cooc_matrix
-                sql_get = "SELECT * FROM tweets_cooc_matrix WHERE search_term = '" + search_term + "';"
-                df_cooc_matrix = pd.read_sql(sql_get, connection)
+                # Get existing coocmatrix
+                sql_get = "SELECT * FROM tweets_coocmatrix WHERE search_term = '" + search_term + "';"
+                df_coocmatrix = pd.read_sql(sql_get, connection)
 
                 matrix = df.to_json()
 
-                # Update or insert cooc_matrix
-                if not df_cooc_matrix.empty:
-                    sql = "UPDATE tweets_cooc_matrix SET matrix = %s WHERE search_term = %s;"
+                # Update or insert coocmatrix
+                if not df_coocmatrix.empty:
+                    sql = "UPDATE tweets_coocmatrix SET matrix = %s WHERE search_term = %s;"
                     cursor.execute(sql, (matrix, search_term))
                 else:
-                    sql = "INSERT INTO tweets_cooc_matrix (search_term, matrix) VALUES (%s, %s);"
+                    sql = "INSERT INTO tweets_coocmatrix (search_term, matrix) VALUES (%s, %s);"
                     cursor.execute(sql, (search_term, matrix))
                 connection.commit()
         except (Exception) as error:
@@ -371,11 +371,11 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def get_cooc_matrix(self, search_term):
+    def get_coocmatrix(self, search_term):
         logger = logging.getLogger(__name__)
 
         try:
-            sql = "SELECT matrix FROM tweets_cooc_matrix WHERE search_term = '" + search_term + "';"
+            sql = "SELECT matrix FROM tweets_coocmatrix WHERE search_term = '" + search_term + "';"
             df = pd.read_sql(sql, connection)
             matrix = df['matrix'][0]
             df = pd.read_json(matrix)

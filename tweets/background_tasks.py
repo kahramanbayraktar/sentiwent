@@ -49,8 +49,8 @@ def update_cooc():
         search_term = row.search_term
         tweets = db.get_tweet_entities(search_term)
 
-        df_cooc_matrix, df_cooc = analysis.cooccurrence(tweets, col='entities', excluded_words=[])
-        db.upsert_cooc_matrix(search_term, df_cooc_matrix)
+        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, col='entities', excluded_words=[])
+        db.upsert_coocmatrix(search_term, df_coocmatrix)
         db.upsert_cooc(search_term, df_cooc)
 
 @background()
