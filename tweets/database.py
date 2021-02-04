@@ -269,6 +269,39 @@ class Database:
             if connection is not None:
                 connection.close()
 
+    def update_tweet_hashtags(self):
+        logger = logging.getLogger(__name__)
+        cleaner = DataCleaner()
+
+        # Get tweets with no entities extracted yet (or including no entities indeed)
+        sql_list = "SELECT TOP 1000 id FROM tweets_tweet WHERE entities_extracted = 0;"
+        df_tweets = pd.read_sql(sql_list, connection)
+        
+        try:
+            with connection.cursor() as cursor:
+                for i, row in df_tweets.iterrows():
+                    id = row["id"]
+
+                    # Get tweet
+                    sql_get = "SELECT tweet FROM tweets_tweet WHERE id = " + str(id) + ";"
+                    df_tweet = pd.read_sql(sql_get, connection)
+                    
+                    # Extract entities for the tweet
+                    ents = cleaner.extract_entities(df_tweet['tweet'][0])
+                    ents = ents.replace("'", "''")
+
+                    # Update tweet's entities field
+                    sql_upd = "UPDATE tweets_tweet SET entities = '" + ents + "', entities_extracted = 1 WHERE id = " + str(id) + ";"
+                    cursor.execute(sql_upd)
+                connection.commit()
+        except (Exception) as error:
+            print(error)
+            logger.error(error)
+        finally:
+            if connection is not None:
+                connection.close()
+
+
     def update_dates(self):
         logger = logging.getLogger(__name__)
 
@@ -391,7 +424,6 @@ class Database:
             sql =   "DECLARE @max_id INT;" \
                     " SELECT @max_id = MAX(id) FROM tweets_hashtag;" \
                     " SELECT w.VALUE hashtag, COUNT(*) [count], GETDATE()" \
-                    " SELECT w.VALUE hashtag, COUNT(*) [count]" \
                     " FROM tweets_tweet AS t" \
                     "    CROSS APPLY (" \
                     "        SELECT DISTINCT TRIM('…' FROM TRIM('?' FROM TRIM(',' FROM TRIM(':' FROM TRIM('.' FROM VALUE))))) [value]" \
