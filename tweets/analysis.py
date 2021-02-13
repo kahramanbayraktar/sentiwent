@@ -41,8 +41,8 @@ class Analysis():
         analysis = TextBlob(text)
         return analysis.sentiment.polarity
 
-    def cooccurrence(self, df, col, exclude, ngram=(1,1), count=100):
-        nested_term_lists = [[term.strip() for term in term_list.lower().split(',') if term.strip() not in exclude] for term_list in df[col]]
+    def cooccurrence(self, df, col, excluded_words, ngram=(1,1), count=100):
+        nested_term_lists = [[term.strip() for term in term_list.lower().split(',') if term.strip() not in excluded_words] for term_list in df[col]]
 
         # CountVectorizer
         vectorizer = CountVectorizer(analyzer='word', ngram_range=ngram) # ngram=(1,1) for co-occurrence, ngram=(2,2) for bigrams, etc.

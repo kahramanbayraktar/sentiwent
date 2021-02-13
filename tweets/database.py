@@ -158,7 +158,7 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def insert_auto_search(self, search_term, user_id):
+    def insert_autosearch(self, search_term, user_id):
         logger = logging.getLogger(__name__)
 
         sql = "IF NOT EXISTS(SELECT * FROM tweets_autosearch WHERE user_id = %s AND search_term = %s) "
@@ -194,6 +194,36 @@ class Database:
         try:
             df = pd.read_sql("SELECT * FROM tweets_autosearch WHERE user_id=" + str(user_id) + " ORDER BY search_term;", connection)
             return df
+        except (Exception) as error:
+            print(error)
+            logger.error(error)
+        finally:
+            if connection is not None:
+                connection.close()
+
+    def get_autosearch(self, id):
+        logger = logging.getLogger(__name__)
+
+        try:
+            df = pd.read_sql("SELECT * FROM tweets_autosearch WHERE id=" + str(id) + ";", connection)
+            return df
+        except (Exception) as error:
+            print(error)
+            logger.error(error)
+        finally:
+            if connection is not None:
+                connection.close()
+
+    def delete_autosearch(self, id):
+        logger = logging.getLogger(__name__)
+
+        sql = "DELETE FROM tweets_autosearch WHERE id=" + str(id) + ";"
+
+        try:
+            df = pd.read_sql(sql, connection)
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                connection.commit()
         except (Exception) as error:
             print(error)
             logger.error(error)

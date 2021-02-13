@@ -28,10 +28,10 @@ def collect_data():
 
             db.insert_tweets(df)
 
-@background()
-def extract_entities():
-    db = Database()
-    db.update_entities()
+# @background()
+# def extract_entities():
+#     db = Database()
+#     db.update_entities()
 
 @background()
 def update_dates():
