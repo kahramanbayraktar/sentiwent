@@ -1,5 +1,13 @@
 {% extends "tweets/base.html" %}
 
 {% block content %}
-	<h1>{{ user.username }}</h1>
+<h1>{{ user.username }}</h1>
+
+<article class="media content-section">
+	<div class="media-body">
+		<p class="article-content form-inline d-flex">
+			<a class="btn btn-outline-primary btn-sm" href="{% url 'bgtask' %}" target="_blank">Start Background
+				Tasks</a>&nbsp;
+	</div>
+</article>
 {% endblock content %}

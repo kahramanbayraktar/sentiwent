@@ -3,9 +3,11 @@ from datetime import datetime
 import spacy
 from urllib.parse import urlencode
 
+from django.http import HttpResponse
 from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.gis import serializers
 from django.core.exceptions import ValidationError
 
@@ -15,7 +17,7 @@ from tweets.functions import Functions
 from tweets.analysis import Analysis
 from tweets.visuals import Visualization
 from tweets.data_cleaner import DataCleaner
-from tweets.background_tasks import collect_data, extract_entities, update_dates, update_hashtags, update_cooc
+from tweets.background_tasks import collect_data, update_hashtags, update_cooc
 
 DEF_SEARCH_TERM = 'covid19'
 
@@ -222,6 +224,52 @@ def hashtag(request, search_term=None):
     return render(request, 'tweets/hashtag.html', context)
 
 @login_required
+def hashtag_network(request, search_term=None):
+    start = datetime.now()
+    
+    search_term = extract_search_term(request, search_term)
+    start_date = request.POST.get('start_date', None)
+    end_date = request.POST.get('end_date', None)
+    tweet_count = request.POST.get('tweet_count', None)
+    if tweet_count:
+        tweet_count = int(tweet_count.replace(',', ''))
+    hashtag_count = request.POST.get('hashtag_count', None)
+    if hashtag_count:
+        hashtag_count = int(hashtag_count.replace(',', ''))
+
+    db = Database()
+    analysis = Analysis()
+    vis = Visualization()
+    cleaner = DataCleaner()
+
+    df = pd.DataFrame()
+    if search_term or request.method == "POST":
+        tweets = db.get_tweets(search_term, start_date, end_date, tweet_count)
+
+    script = ''
+    div = ''
+
+    if not df.empty:
+        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'hashtag', excluded_terms=None, count=hashtag_count)
+
+        db.upsert_coocmatrix(search_term, df_coocmatrix)
+        db.upsert_cooc(search_term, df_cooc)
+
+        html = vis.network_pyvis(df_cooc)
+
+    context = {
+        'search_term': search_term if search_term else '-',
+        'script': script,
+        'div': div,
+        'hashtag_count': hashtag_count,
+        'first_tweet_date': start_date if start_date else '-', 
+        'last_tweet_date': end_date if end_date else '-',
+        'time_elapsed': (datetime.now() - start).seconds,
+    }
+
+    return render(request, 'tweets/hashtag.html', context)
+
+@login_required
 def sentiment(request, search_term=None):
     start = datetime.now()
     
@@ -396,9 +444,31 @@ def settings(request):
     if not search_term:
         search_term = DEF_SEARCH_TERM
 
-    db.insert_auto_search(search_term, request.user.id)
+    db.insert_autosearch(search_term, request.user.id)
 
     return redirect(reverse('settings'))
+
+@login_required
+def delete_auto_search(request):
+    db = Database()
+    
+    autosearch_term = db.get_autosearch(request.id)
+
+    if (autosearch_term):
+        if(autosearch_term.user_id == request.user_id or request.user):
+            db.delete_autosearch(request.id)
+
+    return redirect(reverse('settings'))
+
+@staff_member_required
+def bgtask(request):
+    # update_dates(repeat=150)
+    collect_data(repeat=900)
+    # extract_entities(repeat=150)
+    update_hashtags(repeat=3600)
+    update_cooc(repeat=7200)
+
+    return HttpResponse("Background tasks have started.")
 
 def extract_search_term(request, search_term, use_default=False):
     if request.method == "GET":

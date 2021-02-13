@@ -18,4 +18,5 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('search/<str:search_term>', views.search, name='search'),
     path('settings/', views.settings, name='settings'),
+    path('bgtask/', views.bgtask, name='bgtask'),
 ]
