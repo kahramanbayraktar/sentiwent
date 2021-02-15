@@ -32,4 +32,4 @@ jobs:
       with:
         app-name: 'sentiwent'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_fe1fef83530b439f98d7e6c9fd948852 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_7e20b616047f47c2868564f172f3710f }}
