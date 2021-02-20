@@ -346,8 +346,8 @@ def bigram(request, search_term=None):
         excluded_terms += cleaner.excluded_tokens
         df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, ngram=(2,2), count=result_size)
 
-        db.upsert_coocmatrix(search_term, df_coocmatrix)
-        db.upsert_cooc(search_term, df_cooc)
+        # db.upsert_coocmatrix(search_term, df_coocmatrix)
+        # db.upsert_cooc(search_term, df_cooc)
 
         html = vis.network_pyvis(df_cooc)
 
@@ -405,8 +405,8 @@ def cooccurrence(request, search_term=None):
         excluded_terms += cleaner.excluded_tokens
         df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, count=result_size)
 
-        db.upsert_coocmatrix(search_term, df_coocmatrix)
-        db.upsert_cooc(search_term, df_cooc)
+        # db.upsert_coocmatrix(search_term, df_coocmatrix)
+        # db.upsert_cooc(search_term, df_cooc)
 
         html = vis.network_pyvis(df_cooc)
 
