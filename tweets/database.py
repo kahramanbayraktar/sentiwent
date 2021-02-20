@@ -217,7 +217,7 @@ class Database:
     def delete_autosearch(self, id):
         logger = logging.getLogger(__name__)
 
-        sql = "DELETE FROM tweets_autosearch WHERE id=" + str(id) + ";"
+        sql = "DELETE FROM tweets_autosearch WHERE id='" + str(id) + "';"
 
         try:
             df = pd.read_sql(sql, connection)

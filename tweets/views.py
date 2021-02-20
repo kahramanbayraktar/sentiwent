@@ -449,14 +449,15 @@ def settings(request):
     return redirect(reverse('settings'))
 
 @login_required
-def delete_auto_search(request):
+def delete_auto_search(request, id):
     db = Database()
+    print(request)
     
-    autosearch_term = db.get_autosearch(request.id)
+    autosearch_term = db.get_autosearch(id)
 
-    if (autosearch_term):
-        if(autosearch_term.user_id == request.user_id or request.user):
-            db.delete_autosearch(request.id)
+    if (not autosearch_term.empty):
+        if(autosearch_term.user_id[0] == request.user.id):
+            db.delete_autosearch(id)
 
     return redirect(reverse('settings'))
 
