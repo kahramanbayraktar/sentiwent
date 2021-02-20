@@ -61,20 +61,21 @@ def tweets(request, search_term=None):
 
     tweets = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweets(search_term, start_date, end_date, max=tweet_count)
+        tweets = db.get_tweets(search_term, tweet_count, start_date, end_date)
 
     first_tweet_date = ''
     last_tweet_date = ''
 
-    if not tweets.empty:
-        tweets['sentiment'] = tweets['sentiment'].apply(lambda x: (round(x, 2)))
-        tweets['sent'] = tweets['sentiment'].apply(lambda x: ("pos" if x > 0 else "neg" if x < 0 else "neu"))
-        tweets['sent_icon_class'] = tweets['sentiment'].apply(lambda x: ("smile" if x > 0 else "frown" if x < 0 else "meh"))
-        tweets['sent_color_class'] = tweets['sentiment'].apply(lambda x: ("success" if x > 0 else "danger" if x < 0 else "muted"))
+    if tweets is not None:
+        if not tweets.empty:
+            tweets['sentiment'] = tweets['sentiment'].apply(lambda x: (round(x, 2)))
+            tweets['sent'] = tweets['sentiment'].apply(lambda x: ("pos" if x > 0 else "neg" if x < 0 else "neu"))
+            tweets['sent_icon_class'] = tweets['sentiment'].apply(lambda x: ("smile" if x > 0 else "frown" if x < 0 else "meh"))
+            tweets['sent_color_class'] = tweets['sentiment'].apply(lambda x: ("success" if x > 0 else "danger" if x < 0 else "muted"))
 
-        tweet_count = len(tweets.index)
-        first_tweet_date = pd.to_datetime(tweets.min()['created_at'])
-        last_tweet_date = pd.to_datetime(tweets.max()['created_at'])
+            tweet_count = len(tweets.index)
+            first_tweet_date = pd.to_datetime(tweets.min()['created_at'])
+            last_tweet_date = pd.to_datetime(tweets.max()['created_at'])
 
     context = {
         'search_term': search_term if search_term else '-',
@@ -151,24 +152,25 @@ def frequency(request, search_term=None):
 
     tweets = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweets(search_term, start_date, end_date, tweet_count)
+        tweets = db.get_tweets(search_term, tweet_count, start_date, end_date)
 
     script = ''
     div = ''
     first_tweet_date = ''
     last_tweet_date = ''
     
-    if not tweets.empty:
-        excluded_words = [search_term]
-        excluded_words += cleaner.excluded_tokens
-        df = analysis.frequency(df=tweets, excluded_words=excluded_words, count=result_size)
-        
-        script, div = vis.frequency(df, search_term)
+    if tweets is not None:
+        if not tweets.empty:
+            excluded_words = [search_term]
+            excluded_words += cleaner.excluded_tokens
+            df = analysis.frequency(df=tweets, count=result_size, excluded_words=excluded_words)
+            
+            script, div = vis.frequency(df, search_term)
 
-        tweet_count = len(tweets.index)
-        result_size = len(df.index)
-        first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
-        last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
+            tweet_count = len(tweets.index)
+            result_size = len(df.index)
+            first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
+            last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
 
     context = {
         'search_term': search_term if search_term else '-',
@@ -244,13 +246,13 @@ def hashtag_network(request, search_term=None):
 
     df = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweets(search_term, start_date, end_date, tweet_count)
+        tweets = db.get_tweets(search_term, tweet_count, start_date, end_date)
 
     script = ''
     div = ''
 
     if not df.empty:
-        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'hashtag', excluded_terms=None, count=hashtag_count)
+        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'hashtag', hashtag_count, excluded_terms=None)
 
         db.upsert_coocmatrix(search_term, df_coocmatrix)
         db.upsert_cooc(search_term, df_cooc)
@@ -286,7 +288,7 @@ def sentiment(request, search_term=None):
 
     tweets = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweets(search_term, start_date, end_date, tweet_count)
+        tweets = db.get_tweets(search_term, tweet_count, start_date, end_date)
 
     script = ''
     div = ''
@@ -335,26 +337,27 @@ def bigram(request, search_term=None):
 
     tweets = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweet_entities(search_term, start_date, end_date, tweet_count)
+        tweets = db.get_tweet_entities(search_term, tweet_count, start_date, end_date, tweet_count)
 
     html = ''
     first_tweet_date = ''
     last_tweet_date = ''
     
-    if not tweets.empty:
-        excluded_terms = [search_term]
-        excluded_terms += cleaner.excluded_tokens
-        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, ngram=(2,2), count=result_size)
+    if tweets is not None:
+        if not tweets.empty:
+            excluded_terms = [search_term]
+            excluded_terms += cleaner.excluded_tokens
+            df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', result_size, excluded_terms, ngram=(2,2))
 
-        # db.upsert_coocmatrix(search_term, df_coocmatrix)
-        # db.upsert_cooc(search_term, df_cooc)
+            # db.upsert_coocmatrix(search_term, df_coocmatrix)
+            # db.upsert_cooc(search_term, df_cooc)
 
-        html = vis.network_pyvis(df_cooc)
+            html = vis.network_pyvis(df_cooc)
 
-        tweet_count = len(tweets.index)
-        result_size = len(df_cooc.index)
-        first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
-        last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
+            tweet_count = len(tweets.index)
+            result_size = len(df_cooc.index)
+            first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
+            last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
 
     context = {
         'search_term': search_term if search_term else '-',
@@ -389,31 +392,32 @@ def cooccurrence(request, search_term=None):
 
     tweets = pd.DataFrame()
     if search_term or request.method == "POST":
-        tweets = db.get_tweet_entities(search_term, start_date, end_date, tweet_count)
+        tweets = db.get_tweet_entities(search_term, tweet_count, start_date, end_date)
 
     html = ''
     first_tweet_date = ''
     last_tweet_date = ''
     
-    if not tweets.empty:
-        # df_coocmatrix = db.get_coocmatrix(search_term)
-        # df_cooc = db.get_cooc(search_term)
+    if tweets is not None:
+        if not tweets.empty:
+            # df_coocmatrix = db.get_coocmatrix(search_term)
+            # df_cooc = db.get_cooc(search_term)
 
-        # TODO: Use this approach once it runs stable
-        # if df_coocmatrix.empty or df_cooc.empty:
-        excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
-        excluded_terms += cleaner.excluded_tokens
-        df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', excluded_terms, count=result_size)
+            # TODO: Use this approach once it runs stable
+            # if df_coocmatrix.empty or df_cooc.empty:
+            excluded_terms = [search_term] # TODO: more words to exclude? similar words? synonyms?
+            excluded_terms += cleaner.excluded_tokens
+            df_coocmatrix, df_cooc = analysis.cooccurrence(tweets, 'entities', result_size, excluded_terms)
 
-        # db.upsert_coocmatrix(search_term, df_coocmatrix)
-        # db.upsert_cooc(search_term, df_cooc)
+            # db.upsert_coocmatrix(search_term, df_coocmatrix)
+            # db.upsert_cooc(search_term, df_cooc)
 
-        html = vis.network_pyvis(df_cooc)
+            html = vis.network_pyvis(df_cooc)
 
-        tweet_count = len(tweets.index)
-        result_size = len(df_cooc.index)
-        first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
-        last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
+            tweet_count = len(tweets.index)
+            result_size = len(df_cooc.index)
+            first_tweet_date = datetime.strftime(tweets.min()['created_at'], '%m/%d/%Y %H:%M')
+            last_tweet_date = datetime.strftime(tweets.max()['created_at'], '%m/%d/%Y %H:%M')
 
     context = {
         'search_term': search_term if search_term else '-',

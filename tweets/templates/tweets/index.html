@@ -35,16 +35,11 @@
             </span>
           </h3>
           <p class="article-content form-inline d-flex justify-content-around">
-            <a class="btn btn-outline-primary btn-sm"
-              href="{% url 'tweets' search_term=search.search_term %}">Tweets</a>&nbsp;
-            <a class="btn btn-outline-warning btn-sm"
-              href="{% url 'frequency' search_term=search.search_term %}">Frequency Graph</a>&nbsp;
-            <a class="btn btn-outline-success btn-sm"
-              href="{% url 'sentiment' search_term=search.search_term %}">Sentiment Graph</a>&nbsp;
-            <a class="btn btn-outline-danger btn-sm" href="{% url 'bigram' search_term=search.search_term %}">Bigram
-              Graph</a>&nbsp;
-            <a class="btn btn-outline-info btn-sm"
-              href="{% url 'cooccurrence' search_term=search.search_term %}">Co-occurrence Graph</a>&nbsp;
+            <a class="btn btn-outline-primary btn-sm" href="{% url 'tweets' search_term=search.search_term %}">Tweets</a>&nbsp;
+            <a class="btn btn-outline-warning btn-sm" href="{% url 'frequency' search_term=search.search_term %}">Frequency Graph</a>&nbsp;
+            <a class="btn btn-outline-success btn-sm" href="{% url 'sentiment' search_term=search.search_term %}">Sentiment Graph</a>&nbsp;
+            <a class="btn btn-outline-danger btn-sm" href="{% url 'bigram' search_term=search.search_term %}">Bigram Graph</a>&nbsp;
+            <a class="btn btn-outline-info btn-sm" href="{% url 'cooccurrence' search_term=search.search_term %}">Co-occurrence Graph</a>&nbsp;
           </p>
         </div>
       </article>

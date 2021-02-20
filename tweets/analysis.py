@@ -8,13 +8,15 @@ from tweets.functions import Functions
 from tweets.data_cleaner import DataCleaner
 import spacy
 
+DEF_RESULT_SIZE_FREQUENCY = 20
+DEF_RESULT_SIZE_COOCCURRENCE = 100
 class Analysis():
     
     def sentiment(self, tweets):
         tweets['sent_label'] = tweets['sentiment'].apply(lambda x: 'pos' if x > 0 else 'neg' if x < 0 else 'neu')        
         return tweets
 
-    def frequency(self, df, only_entities=False, excluded_words=[], count=20):
+    def frequency(self, df, count, only_entities=False, excluded_words=[]):
         if only_entities:
             col = 'entities'
             sep = ','
@@ -23,6 +25,9 @@ class Analysis():
             sep = ' '
             cleaner = DataCleaner()
             df = cleaner.clean(df)        
+    
+        if count is None:
+            count = DEF_RESULT_SIZE_FREQUENCY
 
         nested_word_lists = [tweet.lower().split(sep) for tweet in df[col]]
 
@@ -41,7 +46,10 @@ class Analysis():
         analysis = TextBlob(text)
         return analysis.sentiment.polarity
 
-    def cooccurrence(self, df, col, excluded_words, ngram=(1,1), count=100):
+    def cooccurrence(self, df, col, count, excluded_words, ngram=(1,1)):
+        if count is None:
+            count = DEF_RESULT_SIZE_COOCCURRENCE
+
         nested_term_lists = [[term.strip() for term in term_list.lower().split(',') if term.strip() not in excluded_words] for term_list in df[col]]
 
         # CountVectorizer

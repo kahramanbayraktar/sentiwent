@@ -10,6 +10,9 @@ from tweets.data_cleaner import DataCleaner
 from tweets.analysis import Analysis
 from tweets.functions import Functions
 
+DEF_TWEET_COUNT_TWEETS = 100
+DEF_TWEET_COUNT_ENTITY = 1000
+
 class Database:
 
     def insert_tweets(self, df):
@@ -36,8 +39,11 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def get_tweets(self, search_term, start_date=None, end_date=None, max=100):
+    def get_tweets(self, search_term, max, start_date=None, end_date=None):
         logger = logging.getLogger(__name__)
+
+        if not max:
+            max = DEF_TWEET_COUNT_TWEETS
 
         try:
             sql = "SELECT TOP " + str(max) + " tweet, sentiment, created_at FROM tweets_tweet WHERE tweet LIKE '%" + search_term + "%'"
@@ -56,8 +62,11 @@ class Database:
             if connection is not None:
                 connection.close()
 
-    def get_tweet_entities(self, search_term, start_date=None, end_date=None, max=10000, include_sentiment=False):
+    def get_tweet_entities(self, search_term, max, start_date=None, end_date=None, include_sentiment=False):
         logger = logging.getLogger(__name__)
+
+        if max is None:
+            max = DEF_TWEET_COUNT_ENTITY
 
         try:
             fields = " entities, created_at"
